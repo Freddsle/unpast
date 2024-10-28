@@ -34,7 +34,7 @@ jobs:
       - name: Run unpast command inside Docker container
         run: |
           mkdir -p results
-          docker run --rm -v "${{ github.workspace }}":/data --entrypoint bash unpast:${{ github.event.inputs.tag }} -c "cd /data && unpast --exprs /data/unpast/tests/scenario_B500.exprs.tsv.gz --basename results/scenario_B500 --verbose"
+          docker run --rm -v "${{ github.workspace }}":/app --entrypoint bash unpast:${{ github.event.inputs.tag }} -c "cd /app && unpast --exprs /app/unpast/tests/scenario_B500.exprs.tsv.gz --basename results/scenario_B500 --verbose"
           ls -l results
           OUTPUT_FILE=$(ls results/scenario_B500*_*biclusters.tsv)
           if [ ! -s "$OUTPUT_FILE" ]; then
