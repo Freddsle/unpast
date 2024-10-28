@@ -33,14 +33,16 @@ jobs:
 
       - name: Run unpast command inside Docker container
         run: |
-          mkdir -p results
-          docker run --rm -v "${{ github.workspace }}":/app --entrypoint bash unpast:${{ github.event.inputs.tag }} -c "cd /app && unpast --exprs /app/unpast/tests/scenario_B500.exprs.tsv.gz --basename results/scenario_B500 --verbose"
-          ls -l results
-          OUTPUT_FILE=$(ls results/scenario_B500*_*biclusters.tsv)
-          if [ ! -s "$OUTPUT_FILE" ]; then
-            echo "Test failed: Output file is missing or empty"
-            exit 1
-          fi
+          docker run --rm -v "${{ github.workspace }}":/app --entrypoint bash unpast:${{ github.event.inputs.tag }} -c "
+            cd /app && \
+            mkdir -p results && \
+            chmod -R 777 results && \
+            unpast --exprs /app/unpast/tests/scenario_B500.exprs.tsv.gz --basename results/scenario_B500 --verbose && \
+            ls -l results && \
+            OUTPUT_FILE=\$(ls results/scenario_B500*_*biclusters.tsv) && \
+            if [ ! -s \"\$OUTPUT_FILE\" ]; then
+              echo 'Test failed: Output file is missing or empty' && exit 1
+            fi"
 
       - name: Push Docker images to Docker Hub
         if: ${{ success() }}
