@@ -38,7 +38,7 @@ jobs:
 
       - name: Run unpast command inside Docker container
         run: |
-          docker run --rm -v "${{ github.workspace }}":/data unpast:${{ github.event.inputs.tag }} bash -c "
+          docker run --rm -v "${{ github.workspace }}":/data --entrypoint bash unpast:${{ github.event.inputs.tag }} -c "
             cd /data && unpast --exprs unpast/tests/scenario_B500.exprs.tsv.gz --basename results/scenario_B500 --verbose"
           
       - name: Verify Output
