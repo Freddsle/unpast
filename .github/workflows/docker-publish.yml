@@ -31,10 +31,10 @@ jobs:
           docker build -t unpast:${{ github.event.inputs.tag }} .
           docker tag unpast:${{ github.event.inputs.tag }} unpast:latest
 
-          - name: Set up results directory with permissions
-          run: |
-            mkdir -p results
-            chmod -R 777 results
+      - name: Set up results directory with permissions
+        run: |
+          mkdir -p results
+          chmod -R 777 results
 
       - name: Run unpast command inside Docker container
         run: |
