@@ -29,13 +29,15 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t unpast:${{ github.event.inputs.tag }} .
-          docker tag unpast:${{ github.event.inputs.tag }} unpast:latest
-
+          if [ "${{ github.event.inputs.tag }}" != "latest" ]; then
+            docker tag unpast:${{ github.event.inputs.tag }} unpast:latest
+          fi
+      
       - name: Set up results directory with permissions
         run: |
           mkdir -p results
           chmod -R 777 results
-
+      
       - name: Run unpast command inside Docker container
         run: |
           docker run --rm -v "${{ github.workspace }}":/app -v "${{ github.workspace }}/results":/data/results --entrypoint bash unpast:${{ github.event.inputs.tag }} -c "
@@ -54,6 +56,10 @@ jobs:
         if: ${{ success() }}
         run: |
           docker tag unpast:${{ github.event.inputs.tag }} ${{ secrets.DOCKERHUB_USERNAME }}/unpast:${{ github.event.inputs.tag }}
-          docker tag unpast:latest ${{ secrets.DOCKERHUB_USERNAME }}/unpast:latest
+          if [ "${{ github.event.inputs.tag }}" != "latest" ]; then
+            docker tag unpast:latest ${{ secrets.DOCKERHUB_USERNAME }}/unpast:latest
+          fi
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/unpast:${{ github.event.inputs.tag }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/unpast:latest
+          if [ "${{ github.event.inputs.tag }}" != "latest" ]; then
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/unpast:latest
+          fi
